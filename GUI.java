@@ -3,8 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.regex.Pattern;
-import com.sun.xml.internal.ws.util.StringUtils;
-
+import finalProject.Calculator;
 public class GUI extends JFrame implements ActionListener{
 	public static String[] buttons = {"1","2","3","+","*","4","5","6","-","**","7","8","9","/","backspace",".","0","=","%","CE"};
 	public JTextField textField = new JTextField();
@@ -25,8 +24,8 @@ public class GUI extends JFrame implements ActionListener{
 	}
 	public static void main(String[] args) {
 		GUI frame = new GUI();
-		frame.setTitle("Simple Calculator");
-		frame.setSize(300, 400);
+		frame.setTitle("Calculator");
+		frame.setSize(400, 400);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
@@ -40,6 +39,7 @@ public class GUI extends JFrame implements ActionListener{
 						 firstState = firstState.substring(0, firstState.length() - 1);
 						 textField.setText(firstState); 
 					 }
+					 else if(buttons[i].equals("="))
 					 else if(buttons[i].equals("CE")){
 						 firstState = "";
 						 textField.setText(firstState);
@@ -48,33 +48,45 @@ public class GUI extends JFrame implements ActionListener{
 						 if(firstState.contains("+")||firstState.contains("-")||firstState.contains("*")||firstState.contains("/")||firstState.contains("**")||firstState.contains("%")) {
 							 String sign = findArthemiticSign(firstState);
 							 //need to consider negative number
+							 if(firstState.indexOf(sign)==(firstState.length()-1)) {
+								 firstState = firstState.substring(0, firstState.length() - 1);
+								 textField.setText(firstState + buttons[i]);
+								 break;
+							 }
 							 String[] arguments = firstState.split(Pattern.quote(sign));
 							 double argument1 = Double.parseDouble(arguments[0]);
 							 double argument2 = Double.parseDouble(arguments[1]);
 							 double answer=0;
 							 if(sign.equals("+")) {
-								 answer = addition(argument1, argument2);
+								 answer = Calculator.addition(argument1, argument2);
 							 } else if(sign.equals("-")) {
-								 answer = subtraction(argument1,argument2);
-							 }else if(sign.equals("*")) {
-								 answer = multiplication(argument1,argument2);
+								 answer = Calculator.subtraction(argument1,argument2);
+							 }else if(sign.equals("**")) {
+								 answer = Calculator.power(argument1,argument2);
 							 }else if(sign.equals("/")) {
-								 answer = division(argument1,argument2);
+								 answer = Calculator.division(argument1,argument2);
 							 }else if(sign.equals("%")) {
-								 answer = modulus(argument1,argument2);
+								 answer = Calculator.modulus(argument1,argument2);
 							 }else if(sign.equals("-")) {
-								 answer = subtraction(argument1,argument2);
+								 answer = Calculator.subtraction(argument1,argument2);
 							 } else {
-								 answer = power(argument1,argument2);
+								 answer = Calculator.multiplication(argument1,argument2);
 							 }
-							 textField.setText(Double.toString(answer));
+							 textField.setText(String.format("%.2f", answer)+buttons[i]);
 						 }
 						 else {
-							textField.setText(firstState+buttons[i]);
+							 if(firstState.length()==0) {
+								 textField.setText("0" +firstState+buttons[i]);
+							 }
+							 else{
+								 textField.setText(firstState+buttons[i]);
+							 }
 						 }
-					 }
+					 } 
+					 
 					 else {
 						 textField.setText(firstState+buttons[i]);
+						 
 					 }
 				 }
 			 }
@@ -87,12 +99,12 @@ public class GUI extends JFrame implements ActionListener{
 			arthemiticSign="-";
 		}else if(str.contains("/")) {
 			arthemiticSign="/";
-		}else if(str.contains("*")) {
-			arthemiticSign="*";
+		}else if(str.contains("**")) {
+			arthemiticSign="**";
 		}else if(str.contains("%")) {
 			arthemiticSign="%";
 		}else {
-			arthemiticSign="**";
+			arthemiticSign="*";
 		}
 		return arthemiticSign;
 	}
