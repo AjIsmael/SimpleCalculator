@@ -19,7 +19,7 @@ public class Calculator {
    }
    //Divide 
    public static double division(double x, double y){
-      double z = x - y;
+      double z = x / y;
       return z;
    }
    //Modulus 
